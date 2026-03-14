@@ -5,7 +5,12 @@ const nextConfig: NextConfig = {
     root: __dirname,
   },
   images: {
-    domains: ["fqoblokrlkqbnxikjfli.supabase.co"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "fqoblokrlkqbnxikjfli.supabase.co",
+      },
+    ],
   },
 };
 
