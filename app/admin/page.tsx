@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { browserSupabase as supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 
 type Event = {
   id: number;

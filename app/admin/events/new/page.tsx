@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { browserSupabase as supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
 export default function NewEventPage() {
