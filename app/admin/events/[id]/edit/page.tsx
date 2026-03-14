@@ -1,39 +1,73 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, use } from "react";
 import { browserSupabase as supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
-export default function NewEventPage() {
-  function now() {
-    const d = new Date();
-    return {
-      date: d.toISOString().split("T")[0],
-      time: d.toTimeString().slice(0, 5),
-    };
-  }
+export default function EditEventPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
 
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
 
-  const [name, setName] = useState("OC");
+  const [name, setName] = useState("");
   const [type, setType] = useState("tournament");
-  const [date, setDate] = useState(now().date);
-  const [time, setTime] = useState(now().time);
-  const [address, setAddress] = useState("UMD Reckord Armory"); //Temporary filler
-  const [description, setDescription] = useState("Temp Description"); //temporary filler
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [address, setAddress] = useState("");
+  const [description, setDescription] = useState("");
   const [rules, setRules] = useState("");
   const [cost, setCost] = useState("0");
   const [costUnit, setCostUnit] = useState("per person");
   const [registrationLink, setRegistrationLink] = useState("");
   const [image, setImage] = useState<File | null>(null);
+  const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
   const [error, setError] = useState("");
   const router = useRouter();
 
+  useEffect(() => {
+    async function fetchEvent() {
+      const { data } = await supabase
+        .from("events")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (data) {
+        setName(data.name);
+        setType(data.type);
+        setDate(data.date);
+        setTime(data.time);
+        setAddress(data.address);
+        setDescription(data.description);
+        setRules(data.rules ?? "");
+        setCost(data.cost.toString());
+        setCostUnit(data.cost_unit);
+        setRegistrationLink(data.registration_link ?? "");
+        setCurrentImageUrl(data.image_url);
+      }
+      setFetching(false);
+    }
+    fetchEvent();
+  }, [id]);
+
   async function handleSubmit() {
-    let image_url = null;
     setLoading(true);
+    let image_url = currentImageUrl;
 
     if (image) {
+      // Delete old image if exists
+      if (currentImageUrl) {
+        const oldPath = currentImageUrl.split("/event_images/")[1];
+        await supabase.storage.from("event_images").remove([oldPath]);
+      }
+
+      // Upload new image
       const { data, error: uploadError } = await supabase.storage
         .from("event_images")
         .upload(`${Date.now()}-${image.name}`, image);
@@ -51,19 +85,22 @@ export default function NewEventPage() {
       image_url = urlData.publicUrl;
     }
 
-    const { error } = await supabase.from("events").insert({
-      name,
-      type,
-      date,
-      time,
-      address,
-      description,
-      rules,
-      cost: parseFloat(cost),
-      cost_unit: costUnit,
-      registration_link: registrationLink,
-      image_url,
-    });
+    const { error } = await supabase
+      .from("events")
+      .update({
+        name,
+        type,
+        date,
+        time,
+        address,
+        description,
+        rules,
+        cost: parseFloat(cost),
+        cost_unit: costUnit,
+        registration_link: registrationLink,
+        image_url,
+      })
+      .eq("id", id);
 
     if (error) {
       setError(error.message);
@@ -73,9 +110,11 @@ export default function NewEventPage() {
     }
   }
 
+  if (fetching) return <p>Loading...</p>;
+
   return (
     <main>
-      <h1>Add New Event</h1>
+      <h1>Edit Event</h1>
       <input
         placeholder='Event Name'
         value={name}
@@ -125,13 +164,21 @@ export default function NewEventPage() {
         value={registrationLink}
         onChange={(e) => setRegistrationLink(e.target.value)}
       />
+      {(image ? URL.createObjectURL(image) : currentImageUrl) && (
+        <Image
+          src={image ? URL.createObjectURL(image) : currentImageUrl!}
+          alt='Event image preview'
+          width={200}
+          height={200}
+        />
+      )}
       <input
         type='file'
         accept='image/*'
         onChange={(e) => setImage(e.target.files?.[0] ?? null)}
       />
       <button onClick={handleSubmit} disabled={loading}>
-        {loading ? "Creating..." : "Create Event"}
+        {loading ? "Saving..." : "Save Changes"}
       </button>
       {error && <p>{error}</p>}
     </main>
