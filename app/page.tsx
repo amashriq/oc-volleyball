@@ -1,29 +1,32 @@
+import Image from "next/image";
+
 export default function HomePage() {
   return (
     <main>
-      <section>
-        <h1>OC Volleyball</h1>
-        <p>
-          Competitive volleyball in Montgomery and Prince Georges County,
-          Maryland.
-        </p>
-        <a href='/schedule'>View Schedule</a>
-      </section>
+      {/* Hero Section */}
+      <section className='relative h-svh w-full overflow-hidden'>
+        {/* Background Image */}
+        <Image
+          src='/images/hero/hero1.JPG'
+          alt='OC Volleyball Action'
+          fill
+          priority
+          quality={90}
+          className='object-cover'
+        />
 
-      <section>
-        <h2>Who We Are</h2>
-        <p>Placeholder — org story goes here.</p>
-      </section>
+        <div className='absolute inset-0 bg-black/40 z-10' />
 
-      <section>
-        <h2>Our Community</h2>
-        <p>Placeholder — community info goes here.</p>
-      </section>
-
-      <section>
-        <h2>Get Involved</h2>
-        <p>Placeholder — how to join, contact info, social links.</p>
-        <a href='/schedule'>See Upcoming Events</a>
+        {/* 3. The Content (Z-20 ensures it's ON TOP of the image) */}
+        <div className='relative z-20 flex flex-col justify-center h-full px-5 md:px-10 text-white'>
+          <h1 className='text-5xl md:text-8xl font-bold uppercase leading-[0.9] tracking-[1px]'>
+            OUTTA
+            <br />
+            CONTROL
+            <br />
+            VOLLEYBALL
+          </h1>
+        </div>
       </section>
     </main>
   );

@@ -19,7 +19,7 @@ const NavLink = ({
     className='inline-flex items-center justify-center 
       px-4 py-2 
       relative 
-      font-medium
+      font-bold
       text-xl md:text-base /* 20px on mobile, 16px on desktop */
       group'
   >
@@ -41,7 +41,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className='w-full h-16 md:h-20 bg-white flex items-center px-4 relative z-50'>
+      <nav className='fixed top-0 w-full h-16 md:h-20 bg-white flex items-center px-4 z-50'>
         {/* 1. Logo Section (Pinned Left) */}
         <div className='flex-1'>
           <Link href='/'>
