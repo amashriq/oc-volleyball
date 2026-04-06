@@ -8,7 +8,6 @@ export default async function SchedulePage() {
 
   return (
     <main>
-      <h1>OC Volleyball Schedule</h1>
       <EventList events={events ?? []} />
     </main>
   );

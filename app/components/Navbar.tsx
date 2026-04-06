@@ -64,7 +64,10 @@ export default function Navbar() {
 
         {/* 3. Mobile Button (Pinned Right) */}
         <div className='flex-1 flex justify-end md:hidden'>
-          <button onClick={() => setMenuOpen(!menuOpen)} className='text-2xl'>
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className='text-2xl text-black'
+          >
             {menuOpen ? "✕" : "☰"}
           </button>
         </div>
