@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { get } from "http";
 
 type Event = {
   id: number;
@@ -22,16 +21,23 @@ type Event = {
 
 const EVENT_TYPES = ["All", "Tournaments", "Open Gyms"];
 
+// Filter by Category
+// Logic: Normalize "Tournaments" to "tournament" to match typical DB entries
+const FILTER_TO_DB_TYPE: Record<string, string> = {
+  Tournaments: "tournament",
+  "Open Gyms": "open gym",
+};
+
+const PAGE_SIZE = 10;
+const today = new Date().toLocaleDateString("en-CA", {
+  timeZone: "America/New_York",
+});
+
 export default function EventList({ events }: { events: Event[] }) {
   // --- 1. STATE ---
   const [viewMode, setViewMode] = useState<"upcoming" | "past">("upcoming");
   const [filter, setFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(0);
-
-  const PAGE_SIZE = 10;
-  const today = new Date().toLocaleDateString("en-CA", {
-    timeZone: "America/New_York",
-  });
 
   // --- 2. THE PIPELINE (Filter -> Sort) ---
   const processedEvents = events
@@ -39,13 +45,6 @@ export default function EventList({ events }: { events: Event[] }) {
       // Filter by Date
       const isUpcoming = e.date >= today;
       const matchesView = viewMode === "upcoming" ? isUpcoming : !isUpcoming;
-
-      // Filter by Category
-      // Logic: Normalize "Tournaments" to "tournament" to match typical DB entries
-      const FILTER_TO_DB_TYPE: Record<string, string> = {
-        Tournaments: "tournament",
-        "Open Gyms": "open gym",
-      };
 
       const matchesCategory =
         filter === "All" || e.type.toLowerCase() === FILTER_TO_DB_TYPE[filter];
@@ -80,19 +79,14 @@ export default function EventList({ events }: { events: Event[] }) {
     setCurrentPage(0); // Always reset to page 1 on category change
   };
 
-  const getHeaderTitle = () => {
-    // Determine the "Time" prefix
-    const timePrefix = viewMode === "upcoming" ? "Upcoming" : "Past";
-
-    return `${timePrefix}`;
-  };
+  const getHeaderTitle = viewMode === "upcoming" ? "Upcoming" : "Past";
 
   return (
     <>
       <div className='relative h-70 md:h-150 w-full'>
         {/* 1. Background Image */}
         <Image
-          src='/images/schedule/filler_img.jpg'
+          src='/images/schedule/oc14edit.JPG'
           alt='OC Volleyball Action'
           fill
           priority
@@ -106,9 +100,9 @@ export default function EventList({ events }: { events: Event[] }) {
         {/* 3. Content */}
         <div className='relative z-20 h-full mx-auto px-6 flex flex-col justify-center'>
           {/* The Dynamic Title */}
-          <div className='max-w-6xl mx-auto px-6 w-full'>
+          <div className='max-w-7xl mx-auto px-6 w-full'>
             <h1 className='text-white text-6xl md:text-8xl font-bold uppercase tracking-tighter leading-[0.9]'>
-              {getHeaderTitle()} Events
+              {getHeaderTitle} Events
             </h1>
           </div>
         </div>
@@ -118,7 +112,6 @@ export default function EventList({ events }: { events: Event[] }) {
       <div className='max-w-7xl mx-auto px-6 -mt-12 md:-mt-20 relative z-30'>
         {/* 1. The Info Box (Floating Card) */}
         <div className='bg-white p-8 md:p-10'>
-          {" "}
           <h2 className='text-2xl font-black uppercase tracking-tighter text-gray-900 mb-4'>
             Event Schedule
           </h2>
@@ -205,7 +198,7 @@ export default function EventList({ events }: { events: Event[] }) {
           {/* Navy Blue Header Bar */}
           <div className='bg-[#001D3D] text-white p-6 flex justify-between items-end shadow-md'>
             <h2 className='text-4xl font-black leading-none tracking-tighter'>
-              {processedEvents.length} {getHeaderTitle()}{" "}
+              {processedEvents.length} {getHeaderTitle}{" "}
               {processedEvents.length === 1 ? "Event" : "Events"}
             </h2>
           </div>
