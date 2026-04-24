@@ -2,33 +2,33 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import PageHero from "../components/PageHero";
+import type { Event } from "@/lib/types";
 
-type Event = {
-  id: number;
-  name: string;
-  type: string;
-  date: string;
-  time: string;
-  address: string;
-  description: string;
-  rules: string | null;
-  cost: number;
-  cost_unit: string;
-  registration_link: string | null;
-  image_url: string | null;
+type FilterCategory<T> = {
+  key: string;
+  label: string;
+  options: string[];
+  match: (event: T, selectedOptions: string[]) => boolean;
 };
 
-const EVENT_TYPES = ["All", "Tournaments", "Open Gyms"];
+const FILTER_CATEGORIES: FilterCategory<Event>[] = [
+  {
+    key: "type",
+    label: "Event Type",
+    options: ["Tournaments", "Open Gyms"],
+    match: (event, selected) => {
+      if (selected.length === 0) return true;
+      const DB_MAP: Record<string, string> = {
+        Tournaments: "tournament",
+        "Open Gyms": "open gym",
+      };
+      return selected.some((opt) => event.type.toLowerCase() === DB_MAP[opt]);
+    },
+  },
+  // Add new filter categories here — no other code needs to change
+];
 
-// Filter by Category
-// Logic: Normalize "Tournaments" to "tournament" to match typical DB entries
-const FILTER_TO_DB_TYPE: Record<string, string> = {
-  Tournaments: "tournament",
-  "Open Gyms": "open gym",
-};
-
-const PAGE_SIZE = 10;
 const today = new Date().toLocaleDateString("en-CA", {
   timeZone: "America/New_York",
 });
@@ -36,8 +36,7 @@ const today = new Date().toLocaleDateString("en-CA", {
 export default function EventList({ events }: { events: Event[] }) {
   // --- 1. STATE ---
   const [viewMode, setViewMode] = useState<"upcoming" | "past">("upcoming");
-  const [filter, setFilter] = useState("All");
-  const [currentPage, setCurrentPage] = useState(0);
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
 
   // --- 2. THE PIPELINE (Filter -> Sort) ---
   const processedEvents = events
@@ -46,8 +45,10 @@ export default function EventList({ events }: { events: Event[] }) {
       const isUpcoming = e.date >= today;
       const matchesView = viewMode === "upcoming" ? isUpcoming : !isUpcoming;
 
-      const matchesCategory =
-        filter === "All" || e.type.toLowerCase() === FILTER_TO_DB_TYPE[filter];
+      const matchesCategory = FILTER_CATEGORIES.every((cat) => {
+        const selected = selectedFilters[cat.key] ?? [];
+        return cat.match(e, selected);
+      });
 
       return matchesView && matchesCategory;
     })
@@ -61,61 +62,39 @@ export default function EventList({ events }: { events: Event[] }) {
       }
     });
 
-  // --- 3. THE SLICE (Pagination) ---
-  const totalPages = Math.ceil(processedEvents.length / PAGE_SIZE);
-  const displayList = processedEvents.slice(
-    currentPage * PAGE_SIZE,
-    (currentPage + 1) * PAGE_SIZE,
-  );
-
-  // --- 4. RESET HANDLERS ---
+  // --- 3. RESET HANDLERS ---
   const handleViewChange = (newView: "upcoming" | "past") => {
     setViewMode(newView);
-    setCurrentPage(0); // Always reset to page 1 on tab change
   };
 
-  const handleFilterChange = (newFilter: string) => {
-    setFilter(newFilter);
-    setCurrentPage(0); // Always reset to page 1 on category change
+  const handleCheckboxChange = (categoryKey: string, option: string) => {
+    setSelectedFilters((prev) => {
+      const current = prev[categoryKey] ?? [];
+      const updated = current.includes(option)
+        ? current.filter((o) => o !== option)
+        : [...current, option];
+      return { ...prev, [categoryKey]: updated };
+    });
   };
 
   const getHeaderTitle = viewMode === "upcoming" ? "Upcoming" : "Past";
 
   return (
     <>
-      <div className='relative h-70 md:h-150 w-full'>
-        {/* 1. Background Image */}
-        <Image
-          src='/images/schedule/oc14edit.JPG'
-          alt='OC Volleyball Action'
-          fill
-          priority
-          quality={90}
-          className='object-cover'
-        />
-
-        {/* 2. Dimming Layer */}
-        <div className='absolute inset-0 bg-black/40 z-10' />
-
-        {/* 3. Content */}
-        <div className='relative z-20 h-full mx-auto px-6 flex flex-col justify-center'>
-          {/* The Dynamic Title */}
-          <div className='max-w-7xl mx-auto px-6 w-full'>
-            <h1 className='text-white text-6xl md:text-8xl font-bold uppercase tracking-tighter leading-[0.9]'>
-              {getHeaderTitle} Events
-            </h1>
-          </div>
+      <PageHero src='/images/schedule/oc14edit.JPG' alt='OC Volleyball Action'>
+        <div className='max-w-7xl mx-auto px-6 w-full'>
+          <h1 className='page-heading'>{getHeaderTitle} Events</h1>
         </div>
-      </div>
+      </PageHero>
 
       {/* --- MAIN CONTENT AREA --- */}
       <div className='max-w-7xl mx-auto px-6 -mt-12 md:-mt-20 relative z-30'>
         {/* 1. The Info Box (Floating Card) */}
-        <div className='bg-white p-8 md:p-10'>
-          <h2 className='text-2xl font-black uppercase tracking-tighter text-gray-900 mb-4'>
+        <div className='bg-white shadow-md p-8 md:p-10'>
+          <h2 className='text-2xl font-black uppercase tracking-tighter text-black mb-4'>
             Event Schedule
           </h2>
-          <p className='text-gray-600 leading-relaxed text-sm md:text-base'>
+          <p className='text-black leading-relaxed text-sm md:text-base'>
             Want to see upcoming or past events? Filter between them with the
             buttons below! Click on an event to see additional information.
           </p>
@@ -125,14 +104,14 @@ export default function EventList({ events }: { events: Event[] }) {
       <div className='max-w-7xl mx-auto px-6 flex flex-col md:flex-row gap-8 mt-8'>
         {/* LEFT SIDEBAR: FILTERS */}
         <aside className='w-full md:w-72 shrink-0'>
-          <div className='bg-white p-6'>
-            <h3 className='text-xl font-black uppercase tracking-tight mb-6 border-b pb-2 text-black'>
-              Filter Events By:
+          <div className='bg-white p-6 shadow-md'>
+            <h3 className='text-2xl font-black uppercase tracking-tighter text-black mb-6'>
+              Filter Events By
             </h3>
 
             {/* 1. Status Filter (Upcoming/Past) */}
-            <div className='mb-8'>
-              <label className='block text-[10px] font-bold uppercase text-gray-400 mb-3 tracking-widest'>
+            <div className='mb-4'>
+              <label className='block text-md font-black uppercase text-black mb-1'>
                 Timeframe
               </label>
               <div className='flex flex-col gap-2'>
@@ -140,7 +119,7 @@ export default function EventList({ events }: { events: Event[] }) {
                   <button
                     key={mode}
                     onClick={() => handleViewChange(mode)}
-                    className={`text-left text-sm font-bold uppercase transition-colors flex items-center gap-2 ${
+                    className={`text-left text-xs font-semibold uppercase transition-colors flex items-center gap-2 ${
                       viewMode === mode
                         ? "text-red-700"
                         : "text-gray-400 hover:text-black"
@@ -159,37 +138,41 @@ export default function EventList({ events }: { events: Event[] }) {
               </div>
             </div>
 
-            {/* 2. Category Filter (Tournaments/Open Gyms) */}
-            <div className='mb-8'>
-              <label className='block text-[10px] font-bold uppercase text-gray-400 mb-3 tracking-widest'>
-                Event Type
-              </label>
-              <div className='space-y-3'>
-                {EVENT_TYPES.map((type) => (
-                  <label
-                    key={type}
-                    className='flex items-center gap-3 cursor-pointer group'
-                  >
-                    <input
-                      type='radio'
-                      name='type-filter'
-                      checked={filter === type}
-                      onChange={() => handleFilterChange(type)}
-                      className='w-4 h-4 accent-red-700 cursor-pointer'
-                    />
-                    <span
-                      className={`text-sm font-bold uppercase ${
-                        filter === type
-                          ? "text-black"
-                          : "text-gray-400 group-hover:text-gray-700"
-                      }`}
-                    >
-                      {type}
-                    </span>
-                  </label>
-                ))}
+            {/* 2. Config-driven filter categories */}
+            {FILTER_CATEGORIES.map((cat) => (
+              <div key={cat.key} className='mb-8'>
+                <label className='block text-md font-black uppercase text-black mb-1'>
+                  {cat.label}
+                </label>
+                <div className='space-y-3'>
+                  {cat.options.map((option) => {
+                    const isChecked = (selectedFilters[cat.key] ?? []).includes(option);
+                    return (
+                      <label
+                        key={option}
+                        className='flex items-center gap-3 cursor-pointer group'
+                      >
+                        <input
+                          type='checkbox'
+                          checked={isChecked}
+                          onChange={() => handleCheckboxChange(cat.key, option)}
+                          className='w-4 h-4 accent-red-700 cursor-pointer'
+                        />
+                        <span
+                          className={`text-sm font-bold uppercase ${
+                            isChecked
+                              ? "text-black"
+                              : "text-gray-400 group-hover:text-gray-700"
+                          }`}
+                        >
+                          {option}
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </aside>
 
@@ -212,8 +195,8 @@ export default function EventList({ events }: { events: Event[] }) {
 
           {/* Event Rows */}
           <div className='bg-white border-x border-b border-gray-200 shadow-sm'>
-            {displayList.length > 0 ? (
-              displayList.map((event) => (
+            {processedEvents.length > 0 ? (
+              processedEvents.map((event) => (
                 <div
                   key={event.id}
                   className='flex flex-col md:flex-row md:items-center px-8 py-8 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors group'
