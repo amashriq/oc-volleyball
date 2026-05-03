@@ -4,6 +4,9 @@ import { useState, useEffect, use } from "react";
 import { supabase } from "@/lib/supabase-browser";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { revalidateSchedule } from "@/app/admin/actions";
+
+const SKILL_LEVEL_OPTIONS = ["aa", "bb", "a", "b", "open"] as const;
 
 export default function EditEventPage({
   params,
@@ -14,21 +17,32 @@ export default function EditEventPage({
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const [error, setError] = useState("");
 
-  const [name, setName] = useState("");
-  const [type, setType] = useState("tournament");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [address, setAddress] = useState("");
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [rules, setRules] = useState("");
+  const [eventType, setEventType] = useState("tournament");
+  const [gender, setGender] = useState("mens");
+  const [surface, setSurface] = useState("indoor");
+  const [teamSize, setTeamSize] = useState("6v6");
+  const [skillLevels, setSkillLevels] = useState<string[]>([]);
+  const [eventDate, setEventDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [address, setAddress] = useState("");
   const [cost, setCost] = useState("0");
-  const [costUnit, setCostUnit] = useState("per person");
+  const [costType, setCostType] = useState("team");
+  const [capacity, setCapacity] = useState("");
   const [registrationLink, setRegistrationLink] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
-  const [error, setError] = useState("");
   const router = useRouter();
+
+  function toggleSkillLevel(level: string) {
+    setSkillLevels((prev) =>
+      prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level],
+    );
+  }
 
   useEffect(() => {
     async function fetchEvent() {
@@ -39,15 +53,20 @@ export default function EditEventPage({
         .single();
 
       if (data) {
-        setName(data.name);
-        setType(data.type);
-        setDate(data.date);
-        setTime(data.time);
-        setAddress(data.address);
+        setTitle(data.title);
         setDescription(data.description);
-        setRules(data.rules ?? "");
+        setEventType(data.event_type);
+        setGender(data.gender);
+        setSurface(data.surface);
+        setTeamSize(data.team_size);
+        setSkillLevels(data.skill_levels ?? []);
+        setEventDate(data.event_date);
+        setStartTime(data.start_time);
+        setEndTime(data.end_time ?? "");
+        setAddress(data.address ?? "");
         setCost(data.cost.toString());
-        setCostUnit(data.cost_unit);
+        setCostType(data.cost_type);
+        setCapacity(data.capacity?.toString() ?? "");
         setRegistrationLink(data.registration_link ?? "");
         setCurrentImageUrl(data.image_url);
       }
@@ -61,13 +80,11 @@ export default function EditEventPage({
     let image_url = currentImageUrl;
 
     if (image) {
-      // Delete old image if exists
       if (currentImageUrl) {
         const oldPath = currentImageUrl.split("/event_images/")[1];
         await supabase.storage.from("event_images").remove([oldPath]);
       }
 
-      // Upload new image
       const { data, error: uploadError } = await supabase.storage
         .from("event_images")
         .upload(`${Date.now()}-${image.name}`, image);
@@ -88,16 +105,21 @@ export default function EditEventPage({
     const { error } = await supabase
       .from("events")
       .update({
-        name,
-        type,
-        date,
-        time,
-        address,
+        title,
         description,
-        rules,
+        event_type: eventType,
+        gender,
+        surface,
+        team_size: teamSize,
+        skill_levels: skillLevels.length ? skillLevels : null,
+        event_date: eventDate,
+        start_time: startTime,
+        end_time: endTime || null,
+        address: address || null,
         cost: parseFloat(cost),
-        cost_unit: costUnit,
-        registration_link: registrationLink,
+        cost_type: costType,
+        capacity: capacity ? parseInt(capacity) : null,
+        registration_link: registrationLink || null,
         image_url,
       })
       .eq("id", id);
@@ -106,6 +128,7 @@ export default function EditEventPage({
       setError(error.message);
       setLoading(false);
     } else {
+      await revalidateSchedule();
       router.push("/admin");
     }
   }
@@ -116,49 +139,89 @@ export default function EditEventPage({
     <main>
       <h1>Edit Event</h1>
       <input
-        placeholder='Event Name'
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <select value={type} onChange={(e) => setType(e.target.value)}>
-        <option value='tournament'>Tournament</option>
-        <option value='open gym'>Open Gym</option>
-      </select>
-      <input
-        type='date'
-        value={date}
-        onChange={(e) => setDate(e.target.value)}
-      />
-      <input
-        type='time'
-        value={time}
-        onChange={(e) => setTime(e.target.value)}
-      />
-      <input
-        placeholder='Address'
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
+        placeholder='Event Title'
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
       />
       <textarea
         placeholder='Description'
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
-      <textarea
-        placeholder='Rules (optional)'
-        value={rules}
-        onChange={(e) => setRules(e.target.value)}
+      <select value={eventType} onChange={(e) => setEventType(e.target.value)}>
+        <option value='tournament'>Tournament</option>
+        <option value='open_gym'>Open Gym</option>
+      </select>
+      <select value={gender} onChange={(e) => setGender(e.target.value)}>
+        <option value='mens'>Mens</option>
+        <option value='womens'>Womens</option>
+        <option value='coed'>Coed</option>
+      </select>
+      <select value={surface} onChange={(e) => setSurface(e.target.value)}>
+        <option value='indoor'>Indoor</option>
+        <option value='grass'>Grass</option>
+        <option value='beach'>Beach</option>
+      </select>
+      <select value={teamSize} onChange={(e) => setTeamSize(e.target.value)}>
+        <option value='6v6'>6v6</option>
+        <option value='4v4'>4v4</option>
+        <option value='3v3'>3v3</option>
+        <option value='2v2'>2v2</option>
+      </select>
+      <fieldset>
+        <legend>Skill Levels</legend>
+        {SKILL_LEVEL_OPTIONS.map((level) => (
+          <label key={level}>
+            <input
+              type='checkbox'
+              checked={skillLevels.includes(level)}
+              onChange={() => toggleSkillLevel(level)}
+            />
+            {level.toUpperCase()}
+          </label>
+        ))}
+      </fieldset>
+      <input
+        type='date'
+        value={eventDate}
+        onChange={(e) => setEventDate(e.target.value)}
+      />
+      <label>
+        Start Time
+        <input
+          type='time'
+          value={startTime}
+          onChange={(e) => setStartTime(e.target.value)}
+        />
+      </label>
+      <label>
+        End Time (optional)
+        <input
+          type='time'
+          value={endTime}
+          onChange={(e) => setEndTime(e.target.value)}
+        />
+      </label>
+      <input
+        placeholder='Address (optional)'
+        value={address}
+        onChange={(e) => setAddress(e.target.value)}
       />
       <input
         placeholder='Cost'
         value={cost}
         onChange={(e) => setCost(e.target.value)}
       />
-      <select value={costUnit} onChange={(e) => setCostUnit(e.target.value)}>
-        <option value='per person'>Per Person</option>
-        <option value='per team'>Per Team</option>
-        <option value='free'>Free</option>
+      <select value={costType} onChange={(e) => setCostType(e.target.value)}>
+        <option value='team'>Per Team</option>
+        <option value='individual'>Per Individual</option>
       </select>
+      <input
+        type='number'
+        placeholder='Capacity (leave blank for unlimited)'
+        value={capacity}
+        onChange={(e) => setCapacity(e.target.value)}
+      />
       <input
         placeholder='Registration Link (optional)'
         value={registrationLink}

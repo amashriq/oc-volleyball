@@ -14,19 +14,72 @@ type FilterCategory<T> = {
 
 const FILTER_CATEGORIES: FilterCategory<Event>[] = [
   {
-    key: "type",
+    key: "event_type",
     label: "Event Type",
     options: ["Tournaments", "Open Gyms"],
     match: (event, selected) => {
       if (selected.length === 0) return true;
       const DB_MAP: Record<string, string> = {
         Tournaments: "tournament",
-        "Open Gyms": "open gym",
+        "Open Gyms": "open_gym",
       };
-      return selected.some((opt) => event.type.toLowerCase() === DB_MAP[opt]);
+      return selected.some((opt) => event.event_type === DB_MAP[opt]);
     },
   },
-  // Add new filter categories here — no other code needs to change
+  {
+    key: "gender",
+    label: "Gender",
+    options: ["Mens", "Womens", "Coed"],
+    match: (event, selected) => {
+      if (selected.length === 0) return true;
+      const DB_MAP: Record<string, string> = {
+        Mens: "mens",
+        Womens: "womens",
+        Coed: "coed",
+      };
+      return selected.some((opt) => event.gender === DB_MAP[opt]);
+    },
+  },
+  {
+    key: "surface",
+    label: "Surface",
+    options: ["Indoor", "Grass", "Beach"],
+    match: (event, selected) => {
+      if (selected.length === 0) return true;
+      const DB_MAP: Record<string, string> = {
+        Indoor: "indoor",
+        Grass: "grass",
+        Beach: "beach",
+      };
+      return selected.some((opt) => event.surface === DB_MAP[opt]);
+    },
+  },
+  {
+    key: "team_size",
+    label: "Team Size",
+    options: ["6v6", "4v4", "3v3", "2v2"],
+    match: (event, selected) => {
+      if (selected.length === 0) return true;
+      return selected.includes(event.team_size);
+    },
+  },
+  {
+    key: "skill_level",
+    label: "Skill Level",
+    options: ["Open", "AA", "A", "BB", "B"],
+    match: (event, selected) => {
+      if (selected.length === 0) return true;
+      if (!event.skill_levels || event.skill_levels.length === 0) return false;
+      const DB_MAP: Record<string, string> = {
+        AA: "aa",
+        BB: "bb",
+        A: "a",
+        B: "b",
+        Open: "open",
+      };
+      return selected.some((opt) => event.skill_levels!.includes(DB_MAP[opt]));
+    },
+  },
 ];
 
 const today = new Date().toLocaleDateString("en-CA", {
@@ -36,13 +89,15 @@ const today = new Date().toLocaleDateString("en-CA", {
 export default function EventList({ events }: { events: Event[] }) {
   // --- 1. STATE ---
   const [viewMode, setViewMode] = useState<"upcoming" | "past">("upcoming");
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
+  const [selectedFilters, setSelectedFilters] = useState<
+    Record<string, string[]>
+  >({});
 
   // --- 2. THE PIPELINE (Filter -> Sort) ---
   const processedEvents = events
     .filter((e) => {
       // Filter by Date
-      const isUpcoming = e.date >= today;
+      const isUpcoming = e.event_date >= today;
       const matchesView = viewMode === "upcoming" ? isUpcoming : !isUpcoming;
 
       const matchesCategory = FILTER_CATEGORIES.every((cat) => {
@@ -55,10 +110,16 @@ export default function EventList({ events }: { events: Event[] }) {
     .sort((a, b) => {
       if (viewMode === "upcoming") {
         // Soonest first
-        return a.date.localeCompare(b.date) || a.time.localeCompare(b.time);
+        return (
+          a.event_date.localeCompare(b.event_date) ||
+          a.start_time.localeCompare(b.start_time)
+        );
       } else {
         // Most recent past first
-        return b.date.localeCompare(a.date) || b.time.localeCompare(a.time);
+        return (
+          b.event_date.localeCompare(a.event_date) ||
+          b.start_time.localeCompare(a.start_time)
+        );
       }
     });
 
@@ -146,7 +207,9 @@ export default function EventList({ events }: { events: Event[] }) {
                 </label>
                 <div className='space-y-3'>
                   {cat.options.map((option) => {
-                    const isChecked = (selectedFilters[cat.key] ?? []).includes(option);
+                    const isChecked = (selectedFilters[cat.key] ?? []).includes(
+                      option,
+                    );
                     return (
                       <label
                         key={option}
@@ -204,24 +267,23 @@ export default function EventList({ events }: { events: Event[] }) {
                   {/* Column 1: Date */}
                   <div className='w-full md:w-1/4 mb-2 md:mb-0'>
                     <span className='text-sm font-black uppercase tracking-tighter text-black'>
-                      {new Date(event.date + "T00:00:00").toLocaleDateString(
-                        "en-US",
-                        {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        },
-                      )}
+                      {new Date(
+                        event.event_date + "T00:00:00",
+                      ).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
                     </span>
                     <span className='block text-[10px] font-bold text-gray-400 mt-1 uppercase'>
-                      {event.time}
+                      {event.start_time}
                     </span>
                   </div>
 
                   {/* Column 2: Name & Address */}
                   <div className='w-full md:w-1/2 mb-4 md:mb-0'>
                     <h4 className='text-xl font-black uppercase leading-tight mb-1 text-black group-hover:text-red-700 transition-colors'>
-                      {event.name}
+                      {event.title}
                     </h4>
                     <p className='text-xs font-bold text-gray-400 uppercase tracking-wide'>
                       {event.address}

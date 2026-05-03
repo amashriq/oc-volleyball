@@ -13,7 +13,7 @@ export default function AdminPage() {
       const { data } = await supabase
         .from("events")
         .select("*")
-        .order("date", { ascending: true });
+        .order("event_date", { ascending: true });
       if (data) setEvents(data);
     }
     fetchEvents();
@@ -46,7 +46,7 @@ export default function AdminPage() {
       <ul>
         {events.map((event) => (
           <li key={event.id}>
-            {event.name} — {event.date}
+            {event.title} — {event.event_date}
             <a href={`/admin/events/${event.id}/edit`}>Edit</a>
             <button
               onClick={() => handleDelete(event.id, event.image_url)}
