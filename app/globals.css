@@ -3,6 +3,7 @@
 :root {
   --background: #f8fafc;
   --foreground: #171717;
+  color-scheme: light;
 }
 
 @theme inline {
@@ -13,6 +14,10 @@
   --font-heading: var(--font-heading);
 }
 
+
+html {
+  background: var(--background);
+}
 
 body {
   background: var(--background);
