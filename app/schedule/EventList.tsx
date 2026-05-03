@@ -86,6 +86,13 @@ const today = new Date().toLocaleDateString("en-CA", {
   timeZone: "America/New_York",
 });
 
+function formatTime(time: string): string {
+  const [h, m] = time.split(":").map(Number);
+  const period = h >= 12 ? "PM" : "AM";
+  const hour = h % 12 || 12;
+  return `${hour}:${String(m).padStart(2, "0")} ${period}`;
+}
+
 export default function EventList({ events }: { events: Event[] }) {
   // --- 1. STATE ---
   const [viewMode, setViewMode] = useState<"upcoming" | "past">("upcoming");
@@ -282,15 +289,17 @@ export default function EventList({ events }: { events: Event[] }) {
                       })}
                     </span>
                     <span className='block text-[10px] font-bold text-gray-400 mt-1 uppercase'>
-                      {event.start_time}
+                      {formatTime(event.start_time)}
                     </span>
                   </div>
 
                   {/* Column 2: Name & Location */}
                   <div className='w-full md:w-1/2 mb-4 md:mb-0'>
-                    <h4 className='text-xl font-black uppercase leading-tight mb-1 text-black group-hover:text-red-700 transition-colors'>
-                      {event.title}
-                    </h4>
+                    <Link href={`/schedule/${event.id}`}>
+                      <h4 className='text-xl font-black uppercase leading-tight mb-1 text-black group-hover:text-red-700 transition-colors'>
+                        {event.title}
+                      </h4>
+                    </Link>
                     <p className='text-xs font-bold text-gray-400 uppercase tracking-wide'>
                       {event.location}
                     </p>
@@ -301,6 +310,8 @@ export default function EventList({ events }: { events: Event[] }) {
                     {event.registration_link ? (
                       <Link
                         href={event.registration_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className='text-xs font-black uppercase tracking-widest text-red-700 border-b-2 border-red-700/20 hover:border-red-700 pb-1 transition-all'
                       >
                         Registration
