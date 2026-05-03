@@ -310,8 +310,8 @@ export default function EventList({ events }: { events: Event[] }) {
                     {event.registration_link ? (
                       <Link
                         href={event.registration_link}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        target='_blank'
+                        rel='noopener noreferrer'
                         className='text-xs font-black uppercase tracking-widest text-red-700 border-b-2 border-red-700/20 hover:border-red-700 pb-1 transition-all'
                       >
                         Registration
