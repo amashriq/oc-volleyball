@@ -286,13 +286,13 @@ export default function EventList({ events }: { events: Event[] }) {
                     </span>
                   </div>
 
-                  {/* Column 2: Name & Address */}
+                  {/* Column 2: Name & Location */}
                   <div className='w-full md:w-1/2 mb-4 md:mb-0'>
                     <h4 className='text-xl font-black uppercase leading-tight mb-1 text-black group-hover:text-red-700 transition-colors'>
                       {event.title}
                     </h4>
                     <p className='text-xs font-bold text-gray-400 uppercase tracking-wide'>
-                      {event.address}
+                      {event.location}
                     </p>
                   </div>
 

@@ -29,6 +29,7 @@ export default function NewEventPage() {
   const [eventDate, setEventDate] = useState(now().date);
   const [startTime, setStartTime] = useState(now().time);
   const [endTime, setEndTime] = useState("");
+  const [location, setLocation] = useState("");
   const [address, setAddress] = useState("");
   const [cost, setCost] = useState("0");
   const [costType, setCostType] = useState("team");
@@ -43,7 +44,21 @@ export default function NewEventPage() {
     );
   }
 
+  function validate(): string {
+    if (!title.trim()) return "Title is required.";
+    if (!description.trim()) return "Description is required.";
+    if (!eventDate) return "Event date is required.";
+    if (!startTime) return "Start time is required.";
+    if (!location.trim()) return "Location is required.";
+    return "";
+  }
+
   async function handleSubmit() {
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
     let image_url = null;
     setLoading(true);
 
@@ -76,6 +91,7 @@ export default function NewEventPage() {
       event_date: eventDate,
       start_time: startTime,
       end_time: endTime || null,
+      location,
       address: address || null,
       cost: parseFloat(cost),
       cost_type: costType,
@@ -100,11 +116,13 @@ export default function NewEventPage() {
         placeholder='Event Title'
         value={title}
         onChange={(e) => setTitle(e.target.value)}
+        required
       />
       <textarea
         placeholder='Description'
         value={description}
         onChange={(e) => setDescription(e.target.value)}
+        required
       />
       <select value={eventType} onChange={(e) => setEventType(e.target.value)}>
         <option value='tournament'>Tournament</option>
@@ -143,6 +161,7 @@ export default function NewEventPage() {
         type='date'
         value={eventDate}
         onChange={(e) => setEventDate(e.target.value)}
+        required
       />
       <label>
         Start Time
@@ -150,6 +169,7 @@ export default function NewEventPage() {
           type='time'
           value={startTime}
           onChange={(e) => setStartTime(e.target.value)}
+          required
         />
       </label>
       <label>
@@ -160,6 +180,12 @@ export default function NewEventPage() {
           onChange={(e) => setEndTime(e.target.value)}
         />
       </label>
+      <input
+        placeholder='Location'
+        value={location}
+        onChange={(e) => setLocation(e.target.value)}
+        required
+      />
       <input
         placeholder='Address (optional)'
         value={address}

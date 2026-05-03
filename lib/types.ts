@@ -10,6 +10,7 @@ export type Event = {
   event_date: string;
   start_time: string;
   end_time: string | null;
+  location: string;
   address: string | null;
   cost: number;
   cost_type: "team" | "individual";
