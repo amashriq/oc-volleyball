@@ -175,33 +175,39 @@ export default function EventList({ events }: { events: Event[] }) {
               <label className='block text-md font-black uppercase text-black mb-1'>
                 Timeframe
               </label>
-              <div className='flex flex-col gap-2'>
-                {(["upcoming", "past"] as const).map((mode) => (
-                  <button
-                    key={mode}
-                    onClick={() => handleViewChange(mode)}
-                    className={`text-left text-xs font-semibold uppercase transition-colors flex items-center gap-2 ${
-                      viewMode === mode
-                        ? "text-red-700"
-                        : "text-gray-400 hover:text-black"
-                    }`}
-                  >
-                    <span
-                      className={
-                        viewMode === mode ? "opacity-100" : "opacity-0"
-                      }
+              <div className='space-y-3'>
+                {(["upcoming", "past"] as const).map((mode) => {
+                  const isChecked = viewMode === mode;
+                  return (
+                    <label
+                      key={mode}
+                      className='flex items-center gap-3 cursor-pointer group'
                     >
-                      •
-                    </span>
-                    {mode} Events
-                  </button>
-                ))}
+                      <input
+                        type='radio'
+                        name='timeframe'
+                        checked={isChecked}
+                        onChange={() => handleViewChange(mode)}
+                        className='w-4 h-4 accent-black cursor-pointer'
+                      />
+                      <span
+                        className={`text-sm font-bold uppercase transition-colors duration-300 ${
+                          isChecked
+                            ? "text-black"
+                            : "text-gray-400 group-hover:text-black"
+                        }`}
+                      >
+                        {mode} Events
+                      </span>
+                    </label>
+                  );
+                })}
               </div>
             </div>
 
             {/* 2. Config-driven filter categories */}
             {FILTER_CATEGORIES.map((cat) => (
-              <div key={cat.key} className='mb-8'>
+              <div key={cat.key} className='mb-4'>
                 <label className='block text-md font-black uppercase text-black mb-1'>
                   {cat.label}
                 </label>
@@ -219,13 +225,13 @@ export default function EventList({ events }: { events: Event[] }) {
                           type='checkbox'
                           checked={isChecked}
                           onChange={() => handleCheckboxChange(cat.key, option)}
-                          className='w-4 h-4 accent-red-700 cursor-pointer'
+                          className='w-4 h-4 accent-black cursor-pointer'
                         />
                         <span
-                          className={`text-sm font-bold uppercase ${
+                          className={`text-sm font-bold uppercase transition-colors duration-300 ${
                             isChecked
                               ? "text-black"
-                              : "text-gray-400 group-hover:text-gray-700"
+                              : "text-gray-400 group-hover:text-black"
                           }`}
                         >
                           {option}
