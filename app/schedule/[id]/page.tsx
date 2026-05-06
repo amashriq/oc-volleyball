@@ -12,30 +12,10 @@ function formatTime(time: string): string {
 
 function formatDate(date: string): string {
   return new Date(date + "T00:00:00").toLocaleDateString("en-US", {
-    weekday: "long",
     month: "long",
     day: "numeric",
     year: "numeric",
   });
-}
-
-function DetailRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: React.ReactNode;
-}) {
-  return (
-    <div className='flex flex-col sm:flex-row sm:items-start border-b border-gray-100 last:border-0 py-5'>
-      <span className='w-full sm:w-48 shrink-0 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1 sm:mb-0 sm:pt-0.5'>
-        {label}
-      </span>
-      <span className='text-sm font-black uppercase tracking-tighter text-black'>
-        {value}
-      </span>
-    </div>
-  );
 }
 
 export default async function EventPage({
@@ -64,11 +44,6 @@ export default async function EventPage({
   const surfaceLabel =
     event.surface.charAt(0).toUpperCase() + event.surface.slice(1);
 
-  const skillLabel =
-    event.skill_levels && event.skill_levels.length > 0
-      ? event.skill_levels.map((s: string) => s.toUpperCase()).join(", ")
-      : "Open";
-
   const timeLabel = event.end_time
     ? `${formatTime(event.start_time)} – ${formatTime(event.end_time)}`
     : formatTime(event.start_time);
@@ -78,8 +53,6 @@ export default async function EventPage({
       ? "Free"
       : `$${event.cost} / ${event.cost_type === "team" ? "Team" : "Individual"}`;
 
-  const capacityLabel = event.capacity ? `${event.capacity}` : "Unlimited";
-
   return (
     <main>
       <PageHero src='/images/schedule/oc14edit.JPG' alt='OC Volleyball Action'>
@@ -88,63 +61,120 @@ export default async function EventPage({
         </div>
       </PageHero>
 
-      <div className='max-w-7xl mx-auto px-6 -mt-12 md:-mt-20 relative z-30'>
-        {/* Info Box */}
+      <div className='max-w-7xl mx-auto px-6 -mt-12 md:-mt-20 relative z-30 mb-20'>
         <div className='bg-white shadow-md p-8 md:p-10'>
-          <h2 className='text-2xl font-black uppercase tracking-tighter text-black mb-4'>
-            Event Details
-          </h2>
+          {/* Pills + skill badges */}
+          <div className='flex items-start justify-between gap-4 mb-6'>
+            <div className='flex flex-wrap gap-2'>
+              <span className='inline-flex items-center gap-1.5 bg-[#001D3D] text-white text-xs font-bold uppercase tracking-widest px-3 py-1.5'>
+                {eventTypeLabel}
+              </span>
+
+              <span className='inline-flex items-center gap-1.5 bg-[#001D3D] text-white text-xs font-bold uppercase tracking-widest px-3 py-1.5'>
+                {surfaceLabel}
+              </span>
+
+              <span className='inline-flex items-center gap-1.5 bg-[#001D3D] text-white text-xs font-bold uppercase tracking-widest px-3 py-1.5'>
+                {genderLabel}
+              </span>
+            </div>
+
+            {event.skill_levels && event.skill_levels.length > 0 && (
+              <div className='flex flex-wrap gap-1.5'>
+                {event.skill_levels.map((s: string) => (
+                  <span
+                    key={s}
+                    className='bg-black text-white text-xs font-black uppercase tracking-widest px-3 py-1.5'
+                  >
+                    {s.toUpperCase()}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Date + time */}
+          <div className='flex flex-col sm:flex-row sm:items-end gap-1 sm:gap-4 mb-3'>
+            <h2 className='text-4xl md:text-5xl font-black uppercase tracking-tighter text-black leading-none'>
+              {formatDate(event.event_date)}
+            </h2>
+            <span className='text-2xl font-black uppercase tracking-tighter text-gray-400 leading-none'>
+              {timeLabel}
+            </span>
+          </div>
+
+          {/* Description */}
           {event.description && (
-            <p className='text-black leading-relaxed text-sm md:text-base'>
+            <p className='text-gray-600 leading-relaxed text-sm md:text-base mb-8'>
               {event.description}
             </p>
           )}
-        </div>
-      </div>
 
-      <div className='max-w-7xl mx-auto px-6 mt-8 mb-16'>
-        {/* Section header */}
-        <div className='bg-[#001D3D] text-white p-6 shadow-md'>
-          <h2 className='text-4xl font-black leading-none tracking-tighter'>
-            {event.title}
-          </h2>
-        </div>
+          <div className='border-t border-gray-100 mb-8' />
 
-        {/* Column headers */}
-        <div className='bg-[#001226] text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] px-8 py-3'>
-          Event Information
-        </div>
+          {/* Detail grid */}
+          <div className='grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8'>
+            <div className='flex gap-3'>
+              <div>
+                <div className='text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-0.5'>
+                  Team Size
+                </div>
+                <div className='text-sm font-black uppercase tracking-tighter text-black'>
+                  {event.team_size}
+                </div>
+              </div>
+            </div>
 
-        {/* Detail rows */}
-        <div className='bg-white border-x border-b border-gray-200 shadow-sm px-8'>
-          <DetailRow label='Date' value={formatDate(event.event_date)} />
-          <DetailRow label='Time' value={timeLabel} />
-          <DetailRow label='Event Type' value={eventTypeLabel} />
-          <DetailRow label='Gender' value={genderLabel} />
-          <DetailRow label='Surface' value={surfaceLabel} />
-          <DetailRow label='Team Size' value={event.team_size} />
-          <DetailRow label='Skill Level' value={skillLabel} />
-          <DetailRow label='Cost' value={costLabel} />
-          <DetailRow label='Capacity' value={capacityLabel} />
-          <DetailRow label='Location' value={event.location} />
-          {event.address && <DetailRow label='Address' value={event.address} />}
-          <DetailRow
-            label='Registration'
-            value={
-              event.registration_link ? (
-                <Link
-                  href={event.registration_link}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  className='text-red-700 border-b-2 border-red-700/20 hover:border-red-700 pb-1 transition-all'
-                >
-                  Register Now
-                </Link>
-              ) : (
-                <span className='text-gray-300'>Closed</span>
-              )
-            }
-          />
+            <div className='flex gap-3'>
+              <div>
+                <div className='text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-0.5'>
+                  Cost
+                </div>
+                <div className='text-sm font-black uppercase tracking-tighter text-black'>
+                  {costLabel}
+                </div>
+                <div className='text-xs text-gray-400 mt-0.5'>
+                  {event.cost === 0
+                    ? "No entry fee"
+                    : event.cost_type === "team"
+                      ? "Per team"
+                      : "Per person"}
+                </div>
+              </div>
+            </div>
+
+            <div className='flex gap-3'>
+              <div>
+                <div className='text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-0.5'>
+                  Location
+                </div>
+                <div className='text-sm font-black uppercase tracking-tighter text-black'>
+                  {event.location}
+                </div>
+                {event.address && (
+                  <div className='text-xs text-gray-500 mt-0.5'>
+                    {event.address}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Register button */}
+          {event.registration_link ? (
+            <Link
+              href={event.registration_link}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='w-full flex items-center justify-center duration-300 bg-red-700 hover:bg-red-800 text-white text-sm font-black uppercase tracking-widest px-8 py-4 transition-colors'
+            >
+              Register Now
+            </Link>
+          ) : (
+            <span className='w-full flex items-center justify-center bg-gray-100 text-gray-400 text-sm font-black uppercase tracking-widest px-8 py-4 cursor-not-allowed'>
+              Registration Closed
+            </span>
+          )}
         </div>
       </div>
     </main>

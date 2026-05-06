@@ -14,7 +14,6 @@
   --font-heading: var(--font-heading);
 }
 
-
 html {
   background: var(--background);
 }
@@ -27,12 +26,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-heading), sans-serif;
 }
 
 @layer components {
   .page-heading {
-    @apply text-white text-6xl md:text-8xl font-bold uppercase tracking-tighter leading-[0.9];
+    @apply text-white text-5xl md:text-8xl font-bold uppercase tracking-tighter leading-[0.9];
   }
 }

@@ -99,6 +99,7 @@ export default function EventList({ events }: { events: Event[] }) {
   const [selectedFilters, setSelectedFilters] = useState<
     Record<string, string[]>
   >({});
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   // --- 2. THE PIPELINE (Filter -> Sort) ---
   const processedEvents = events
@@ -172,66 +173,52 @@ export default function EventList({ events }: { events: Event[] }) {
       <div className='max-w-7xl mx-auto px-6 flex flex-col md:flex-row gap-8 mt-8'>
         {/* LEFT SIDEBAR: FILTERS */}
         <aside className='w-full md:w-72 shrink-0'>
-          <div className='bg-white p-6 shadow-md'>
-            <h3 className='text-2xl font-black uppercase tracking-tighter text-black mb-6'>
-              Filter Events By
+          {/* Mobile toggle button */}
+          <button
+            className='md:hidden w-full bg-white shadow-md px-6 py-4 flex justify-between items-center'
+            onClick={() => setFiltersOpen((v) => !v)}
+          >
+            <h3 className='text-2xl font-black uppercase tracking-tighter text-black'>
+              Filter Events
             </h3>
+            <span
+              className={`text-black text-lg transition-transform duration-300 ease-in-out ${
+                filtersOpen ? "rotate-180" : ""
+              }`}
+            >
+              ▼
+            </span>
+          </button>
 
-            {/* 1. Status Filter (Upcoming/Past) */}
-            <div className='mb-4'>
-              <label className='block text-md font-black uppercase text-black mb-1'>
-                Timeframe
-              </label>
-              <div className='space-y-3'>
-                {(["upcoming", "past"] as const).map((mode) => {
-                  const isChecked = viewMode === mode;
-                  return (
-                    <label
-                      key={mode}
-                      className='flex items-center gap-3 cursor-pointer group'
-                    >
-                      <input
-                        type='radio'
-                        name='timeframe'
-                        checked={isChecked}
-                        onChange={() => handleViewChange(mode)}
-                        className='w-4 h-4 accent-black cursor-pointer'
-                      />
-                      <span
-                        className={`text-sm font-bold uppercase transition-colors duration-300 ${
-                          isChecked
-                            ? "text-black"
-                            : "text-gray-400 group-hover:text-black"
-                        }`}
-                      >
-                        {mode} Events
-                      </span>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
+          {/* Collapsible filter panel */}
+          <div
+            className={`overflow-hidden transition-all duration-300 ease-in-out shadow-md md:overflow-visible md:max-h-none ${
+              filtersOpen ? "max-h-300" : "max-h-0"
+            }`}
+          >
+            <div className='bg-white px-6 md:p-6 shadow-md'>
+              <h3 className='hidden md:block text-2xl font-black uppercase tracking-tighter text-black mb-6'>
+                Filter Events By
+              </h3>
 
-            {/* 2. Config-driven filter categories */}
-            {FILTER_CATEGORIES.map((cat) => (
-              <div key={cat.key} className='mb-4'>
+              {/* 1. Status Filter (Upcoming/Past) */}
+              <div className='mb-4'>
                 <label className='block text-md font-black uppercase text-black mb-1'>
-                  {cat.label}
+                  Timeframe
                 </label>
                 <div className='space-y-3'>
-                  {cat.options.map((option) => {
-                    const isChecked = (selectedFilters[cat.key] ?? []).includes(
-                      option,
-                    );
+                  {(["upcoming", "past"] as const).map((mode) => {
+                    const isChecked = viewMode === mode;
                     return (
                       <label
-                        key={option}
+                        key={mode}
                         className='flex items-center gap-3 cursor-pointer group'
                       >
                         <input
-                          type='checkbox'
+                          type='radio'
+                          name='timeframe'
                           checked={isChecked}
-                          onChange={() => handleCheckboxChange(cat.key, option)}
+                          onChange={() => handleViewChange(mode)}
                           className='w-4 h-4 accent-black cursor-pointer'
                         />
                         <span
@@ -241,14 +228,64 @@ export default function EventList({ events }: { events: Event[] }) {
                               : "text-gray-400 group-hover:text-black"
                           }`}
                         >
-                          {option}
+                          {mode} Events
                         </span>
                       </label>
                     );
                   })}
                 </div>
               </div>
-            ))}
+
+              {/* 2. Config-driven filter categories */}
+              {FILTER_CATEGORIES.map((cat) => (
+                <div key={cat.key} className='mb-4'>
+                  <label className='block text-md font-black uppercase text-black mb-1'>
+                    {cat.label}
+                  </label>
+                  <div className='space-y-3'>
+                    {cat.options.map((option) => {
+                      const isChecked = (
+                        selectedFilters[cat.key] ?? []
+                      ).includes(option);
+                      return (
+                        <label
+                          key={option}
+                          className='flex items-center gap-3 cursor-pointer group'
+                        >
+                          <input
+                            type='checkbox'
+                            checked={isChecked}
+                            onChange={() =>
+                              handleCheckboxChange(cat.key, option)
+                            }
+                            className='w-4 h-4 accent-black cursor-pointer'
+                          />
+                          <span
+                            className={`text-sm font-bold uppercase transition-colors duration-300 ${
+                              isChecked
+                                ? "text-black"
+                                : "text-gray-400 group-hover:text-black"
+                            }`}
+                          >
+                            {option}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+
+              {/* Hide Filters — mobile only */}
+              <div className='md:hidden mt-4 pt-4 border-t border-gray-100 text-center'>
+                <button
+                  onClick={() => setFiltersOpen(false)}
+                  className='text-sm w-full font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors duration-300'
+                >
+                  Hide Filters
+                </button>
+              </div>
+            </div>
           </div>
         </aside>
 
