@@ -42,7 +42,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className='sticky top-0 w-full h-16 md:h-20 bg-white flex items-center px-4 z-50'>
+      <nav className='sticky top-0 w-full h-16 md:h-20 shadow-md bg-white flex items-center px-4 z-50'>
         {/* 1. Logo Section (Pinned Left) */}
         <div className='flex-1'>
           <Link href='/'>

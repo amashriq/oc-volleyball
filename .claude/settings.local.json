@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(Select-String -Pattern \"Upcoming Events|Register Now|View All\")",
+      "Bash(ls -la \"C:\\\\\\\\Users\\\\\\\\Adeeb\\\\\\\\Documents\\\\\\\\oc-volleyball\")"
+    ]
+  }
+}

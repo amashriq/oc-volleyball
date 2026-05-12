@@ -53,7 +53,7 @@ No test suite exists yet.
 
 **Admin pages** (`/admin`, `/admin/login`, `/admin/events/new`, `/admin/events/[id]/edit`) are completely unstyled bare HTML — intentional, still a work in progress.
 
-**Schedule filtering logic:** `EventList.tsx` compares `event.event_date` (a `YYYY-MM-DD` string) against today's date obtained via `toLocaleDateString("en-CA", { timeZone: "America/New_York" })`. `FILTER_CATEGORIES` drives all sidebar filters: event type (`"tournament"` / `"open_gym"`), gender, surface, team size, and skill level (array column — an event matches if any of its `skill_levels` values are in the selected set; events with null/empty `skill_levels` are hidden when a skill filter is active). Pagination (`PAGE_SIZE = 10`) is implemented in state but no prev/next UI buttons exist yet.
+**Schedule filtering logic:** `EventList.tsx` compares `event.event_date` (a `YYYY-MM-DD` string) against today's date obtained via `toLocaleDateString("en-CA", { timeZone: "America/New_York" })`. `FILTER_CATEGORIES` drives all sidebar filters: event type (`"tournament"` / `"open_gym"`), gender, surface, team size, and skill level (array column — an event matches if any of its `skill_levels` values are in the selected set; events with null/empty `skill_levels` are hidden when a skill filter is active). All matching events render — no pagination.
 
 **Image uploads:** stored in the `event_images` Supabase Storage bucket. The path is `${Date.now()}-${filename}`. On edit, the old image is deleted before uploading the replacement. Remote image hostname `fqoblokrlkqbnxikjfli.supabase.co` is allowlisted in `next.config.ts`.
 
@@ -70,3 +70,25 @@ import PageHero from "@/app/components/PageHero";
 - `contentPosition="top"` — title near the top-left (home page only); default is `"center"` (all other pages)
 - `children` is the title markup — use `<h1 className="page-heading">` for standard pages, or a multi-line `<h1>` with `<br />` for the home page style
 - Place the hero image in `public/images/<page-name>/`
+
+## New page checklist
+
+Every new public page must include all four of the following:
+
+**1. Metadata** — set in the same file as the page component.
+
+- Static page: `export const metadata: Metadata = { title: "Page Name", description: "..." }`
+- Dynamic route (fetches by ID): `export async function generateMetadata({ params })` — query only the fields needed for title/description, then return `{}` if the record is missing.
+- Always set `title` (short name only — the root layout appends `" | Outta Control Volleyball"` via the `"%s | Outta Control Volleyball"` template) and `description`.
+- Add `openGraph: { title, description }` for pages worth sharing on social media.
+- `metadataBase` is already set to `https://oc-volleyball.com` in `app/layout.tsx`, so OG image `url` values can be relative paths (e.g. `"/images/logo/oc_logo.png"`).
+
+**2. Loading state** — create `loading.tsx` in the same folder as the page.
+
+- Render the same `<PageHero>` with the same static image so the hero appears instantly.
+- Replace all data-driven content with `bg-gray-200 animate-pulse` skeleton blocks sized to match the real content.
+- See `app/loading.tsx`, `app/schedule/loading.tsx`, and `app/schedule/[id]/loading.tsx` for examples.
+
+**3. Hero** — use `<PageHero>` as documented above. Every public page has one.
+
+**4. notFound()** — any dynamic route that fetches a record by ID must call `notFound()` from `next/navigation` when the query returns nothing. Also export a `generateMetadata` that returns `{}` for the same missing-record case.

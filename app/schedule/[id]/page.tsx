@@ -1,8 +1,34 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase-server";
 import PageHero from "@/app/components/PageHero";
 import { formatTime, formatDate } from "@/lib/format";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const supabase = await createClient();
+  const { data: event } = await supabase
+    .from("events")
+    .select("title, description")
+    .eq("id", id)
+    .single();
+
+  if (!event) return {};
+
+  return {
+    title: event.title,
+    description: event.description ?? undefined,
+    openGraph: {
+      title: `${event.title} | Outta Control Volleyball`,
+      description: event.description ?? undefined,
+    },
+  };
+}
 
 export default async function EventPage({
   params,

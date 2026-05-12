@@ -37,7 +37,7 @@ export default async function HomePage() {
       </PageHero>
 
       {events && events.length > 0 && (
-        <section className='max-w-7xl mx-auto px-6 py-12'>
+        <section className='max-w-7xl mx-auto px-6 py-6'>
           <div className='flex justify-between items-baseline mb-6'>
             <h2 className='text-2xl font-black uppercase tracking-tighter text-black'>
               Upcoming Events

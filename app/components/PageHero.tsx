@@ -5,7 +5,7 @@ type PageHeroProps = {
   alt?: string;
   contentPosition?: "top" | "center";
   heightClass?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 };
 
 export default function PageHero({
