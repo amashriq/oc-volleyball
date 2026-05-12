@@ -15,10 +15,11 @@ export const metadata: Metadata = {
 
 export default async function SchedulePage() {
   const supabase = await createClient();
-  const { data: events } = await supabase
+  const { data: events, error } = await supabase
     .from("events")
     .select("id, title, location, registration_link, event_date, start_time, event_type, gender, surface, team_size, skill_levels")
     .eq("is_active", true);
+  if (error) throw error;
 
   return (
     <main>

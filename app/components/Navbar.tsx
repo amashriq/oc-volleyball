@@ -86,7 +86,7 @@ export default function Navbar() {
         {/* The Slide-down Menu */}
         {/* -mt-2 overlaps the nav to hide sub-pixel gaps, pt-10 balances the spacing */}
         <div
-          className={`absolute top-16 left-0 w-full bg-white shadow-xl -mt-2 pb-6 transition-transform duration-500 ease-in-out flex flex-col items-center gap-2 ${
+          className={`absolute top-16 left-0 w-full bg-white shadow-xl -mt-2 py-6 transition-transform duration-500 ease-in-out flex flex-col items-center gap-2 ${
             menuOpen ? "translate-y-0" : "-translate-y-full"
           }`}
         >

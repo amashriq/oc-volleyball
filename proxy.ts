@@ -23,11 +23,11 @@ export async function proxy(req: NextRequest) {
   );
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession();
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (
-    !session &&
+    !user &&
     req.nextUrl.pathname.startsWith("/admin") &&
     !req.nextUrl.pathname.startsWith("/admin/login")
   ) {

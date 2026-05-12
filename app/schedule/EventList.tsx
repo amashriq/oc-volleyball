@@ -83,13 +83,12 @@ const FILTER_CATEGORIES: FilterCategory<Event>[] = [
   },
 ];
 
-const today = new Date().toLocaleDateString("en-CA", {
-  timeZone: "America/New_York",
-});
-
 export default function EventList({ events }: { events: Event[] }) {
   // --- 1. STATE ---
   const [viewMode, setViewMode] = useState<"upcoming" | "past">("upcoming");
+  const today = new Date().toLocaleDateString("en-CA", {
+    timeZone: "America/New_York",
+  });
   const [selectedFilters, setSelectedFilters] = useState<
     Record<string, string[]>
   >({});

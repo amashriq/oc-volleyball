@@ -8,7 +8,7 @@ export default async function HomePage() {
   const today = new Date().toLocaleDateString("en-CA", {
     timeZone: "America/New_York",
   });
-  const { data: events } = await supabase
+  const { data: events, error } = await supabase
     .from("events")
     .select(
       "id, title, event_type, gender, surface, team_size, skill_levels, event_date, start_time, end_time, location, address, cost, cost_type, registration_link",
@@ -18,6 +18,7 @@ export default async function HomePage() {
     .order("event_date", { ascending: true })
     .order("start_time", { ascending: true })
     .limit(3);
+  if (error) throw error;
 
   return (
     <main>
