@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase-browser";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { revalidateSchedule } from "@/app/admin/actions";
+import { validateEvent } from "@/lib/validateEvent";
 
 const SKILL_LEVEL_OPTIONS = ["aa", "bb", "a", "b", "open"] as const;
 
@@ -81,17 +82,8 @@ export default function EventForm({ mode, initialValues, eventId }: EventFormPro
     );
   }
 
-  function validate(): string {
-    if (!title.trim()) return "Title is required.";
-    if (!description.trim()) return "Description is required.";
-    if (!eventDate) return "Event date is required.";
-    if (!startTime) return "Start time is required.";
-    if (!location.trim()) return "Location is required.";
-    return "";
-  }
-
   async function handleSubmit() {
-    const validationError = validate();
+    const validationError = validateEvent({ title, description, eventDate, startTime, location });
     if (validationError) {
       setError(validationError);
       return;
