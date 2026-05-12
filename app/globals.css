@@ -40,3 +40,17 @@ h6 {
     @apply text-white text-5xl md:text-8xl font-bold uppercase tracking-tighter leading-[0.9];
   }
 }
+
+.events-scroll {
+  scrollbar-color: black transparent;
+  scrollbar-width: thin;
+}
+.events-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.events-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.events-scroll::-webkit-scrollbar-thumb {
+  background: black;
+}

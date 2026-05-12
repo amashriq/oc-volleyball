@@ -41,7 +41,7 @@ export default function UpcomingEventCard({ event }: Props) {
       : `$${event.cost} / ${event.cost_type === "team" ? "Team" : "Individual"}`;
 
   return (
-    <article className='w-full md:min-w-0 snap-start shrink-0 bg-white shadow-md flex flex-col h-120 md:h-120'>
+    <article className='w-[82vw] md:w-auto md:min-w-0 snap-start shrink-0 bg-white shadow-md flex flex-col h-120 md:h-120'>
       <div className='flex flex-col flex-1 p-6 overflow-hidden'>
         {/* Pills */}
         <div className='flex flex-wrap gap-1.5 mb-3'>

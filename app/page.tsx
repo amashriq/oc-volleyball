@@ -21,7 +21,12 @@ export default async function HomePage() {
 
   return (
     <main>
-      <PageHero src='/images/hero/hero1.JPG' alt='OC Volleyball Action' contentPosition='top'>
+      <PageHero
+        src='/images/hero/hero1.JPG'
+        alt='OC Volleyball Action'
+        contentPosition='top'
+        heightClass='h-150 md:h-150'
+      >
         <h1 className='page-heading'>
           OUTTA
           <br />
@@ -47,7 +52,7 @@ export default async function HomePage() {
 
           {/* Mobile: horizontal scroll snap — one card at a time */}
           {/* Desktop: 3-column grid */}
-          <div className='flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-3 md:gap-6 md:overflow-visible'>
+          <div className='events-scroll -mx-6 px-6 flex gap-4 overflow-x-auto snap-x snap-mandatory md:mx-0 md:px-0 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible'>
             {events.map((event) => (
               <UpcomingEventCard key={event.id} event={event} />
             ))}
