@@ -10,7 +10,11 @@ npm run build    # Production build
 npm run lint     # Run ESLint
 ```
 
-No test suite exists yet.
+```bash
+npm test         # Run all Jest unit tests
+npm run test:watch  # Jest in watch mode
+npm run test:e2e    # Playwright E2E tests (requires dev server)
+```
 
 ## Architecture
 
@@ -92,3 +96,41 @@ Every new public page must include all four of the following:
 **3. Hero** — use `<PageHero>` as documented above. Every public page has one.
 
 **4. notFound()** — any dynamic route that fetches a record by ID must call `notFound()` from `next/navigation` when the query returns nothing. Also export a `generateMetadata` that returns `{}` for the same missing-record case.
+
+## Testing
+
+Follow this workflow for **every** change to a `.ts` or `.tsx` source file — no exceptions for "small" changes. Tests are not required for non-code edits (config files, CSS, JSON, markdown).
+
+### Step 1 — Write tests first
+
+Before writing any implementation code, write the full test suite in `__tests__/<filename>.test.ts(x)` adjacent to the source file. Use existing tests in `app/schedule/__tests__/` and `lib/__tests__/` as style references.
+
+Tests must be strict and adversarial — written as if you are trying to break your own implementation:
+- **Happy paths** — correct inputs, expected outputs
+- **Edge cases** — empty arrays, zero values, single-element inputs, very large inputs
+- **Invalid inputs** — wrong types, null, undefined, out-of-range values
+- **Boundary conditions** — off-by-one, min/max limits, exact threshold values
+- **Failure modes** — what should throw, what should return a fallback, what should be rejected
+
+Do not write tests that are trivially easy to pass. Write tests that would catch real bugs.
+
+### Step 2 — Implement the code
+
+Write the implementation after the tests exist. The PostToolUse hook runs `npm test` automatically after every edit — watch the spinner for results.
+
+### Step 3 — Fix loop (code only, max 5 iterations)
+
+If tests fail:
+1. Read the failure output carefully
+2. Fix only the implementation — never change a test to make it pass, unless the test itself is provably wrong (e.g., wrong expected value due to a spec misread)
+3. Run `npm test` again
+4. Repeat until all tests pass
+
+If tests are still failing after 5 iterations: stop and explain exactly what you are stuck on — do not continue guessing.
+
+### Step 4 — Report
+
+When all tests pass, report:
+- How many fix-loop iterations it took
+- The root cause of each failure
+- Any edge cases discovered during the process that were not in the original spec

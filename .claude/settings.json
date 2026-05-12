@@ -1,0 +1,24 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "$data = $input | ConvertFrom-Json; $f = $data.tool_input.file_path; if ($f -and ($f -match '\\.(ts|tsx)$') -and ($f -notmatch 'node_modules') -and ($f -notmatch '\\.config\\.ts$') -and ($f -notmatch 'jest\\.setup')) { npm test -- --passWithNoTests 2>&1 | Select-Object -Last 40 }",
+            "statusMessage": "Running tests...",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm test*)",
+      "Bash(npx jest*)"
+    ]
+  }
+}
