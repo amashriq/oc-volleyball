@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import PageHero from "../components/PageHero";
 import type { Event } from "@/lib/types";
+import { formatTime } from "@/lib/format";
 
 type FilterCategory<T> = {
   key: string;
@@ -85,13 +86,6 @@ const FILTER_CATEGORIES: FilterCategory<Event>[] = [
 const today = new Date().toLocaleDateString("en-CA", {
   timeZone: "America/New_York",
 });
-
-function formatTime(time: string): string {
-  const [h, m] = time.split(":").map(Number);
-  const period = h >= 12 ? "PM" : "AM";
-  const hour = h % 12 || 12;
-  return `${hour}:${String(m).padStart(2, "0")} ${period}`;
-}
 
 export default function EventList({ events }: { events: Event[] }) {
   // --- 1. STATE ---

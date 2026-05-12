@@ -2,21 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase-server";
 import PageHero from "@/app/components/PageHero";
-
-function formatTime(time: string): string {
-  const [h, m] = time.split(":").map(Number);
-  const period = h >= 12 ? "PM" : "AM";
-  const hour = h % 12 || 12;
-  return `${hour}:${String(m).padStart(2, "0")} ${period}`;
-}
-
-function formatDate(date: string): string {
-  return new Date(date + "T00:00:00").toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-}
+import { formatTime, formatDate } from "@/lib/format";
 
 export default async function EventPage({
   params,
@@ -132,13 +118,6 @@ export default async function EventPage({
                 </div>
                 <div className='text-sm font-black uppercase tracking-tighter text-black'>
                   {costLabel}
-                </div>
-                <div className='text-xs text-gray-400 mt-0.5'>
-                  {event.cost === 0
-                    ? "No entry fee"
-                    : event.cost_type === "team"
-                      ? "Per team"
-                      : "Per person"}
                 </div>
               </div>
             </div>
