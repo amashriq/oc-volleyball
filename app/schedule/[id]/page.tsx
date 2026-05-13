@@ -67,7 +67,7 @@ export default async function EventPage({
 
   return (
     <main>
-      <PageHero src='/images/schedule/oc14edit.JPG' alt='OC Volleyball Action'>
+      <PageHero src='/images/schedule/oc14.JPG' alt='OC Volleyball Action'>
         <div className='max-w-7xl mx-auto px-6 w-full'>
           <h1 className='page-heading'>{event.title}</h1>
         </div>

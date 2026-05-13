@@ -6,7 +6,7 @@ import PageHero from "../components/PageHero";
 export default function Error({ reset }: { reset: () => void }) {
   return (
     <main>
-      <PageHero src='/images/schedule/oc14edit.JPG' alt='OC Volleyball' heightClass='h-screen'>
+      <PageHero src='/images/schedule/oc14.JPG' alt='OC Volleyball' heightClass='h-screen'>
         <div className='text-center'>
           <p className='text-red-500 text-sm font-black uppercase tracking-[0.3em] mb-4'>
             Error 500

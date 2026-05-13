@@ -3,7 +3,7 @@ import PageHero from "@/app/components/PageHero";
 export default function EventDetailLoading() {
   return (
     <main>
-      <PageHero src='/images/schedule/oc14edit.JPG' alt='OC Volleyball Action'>
+      <PageHero src='/images/schedule/oc14.JPG' alt='OC Volleyball Action'>
         <div className='max-w-7xl mx-auto px-6 w-full'>
           <div className='h-10 w-64 bg-white/20 rounded' />
         </div>

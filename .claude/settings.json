@@ -1,5 +1,19 @@
 {
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "$data = $input | ConvertFrom-Json; $cmd = $data.tool_input.command; if ($cmd -match '^git (commit|push)') { $tscOut = & npx tsc --noEmit 2>&1; if ($LASTEXITCODE -ne 0) { $tscOut | Select-Object -Last 40 | ForEach-Object { Write-Host $_ }; Write-Output '{\"continue\":false,\"stopReason\":\"TypeScript type check failed. Run: npx tsc --noEmit\"}'; exit 1 } }",
+            "statusMessage": "Type-checking...",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",

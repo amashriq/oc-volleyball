@@ -1,13 +1,18 @@
 import type { Event } from "@/lib/types";
 
-type FilterCategory<T> = {
+type FilterableEvent = Pick<
+  Event,
+  "event_type" | "gender" | "surface" | "team_size" | "skill_levels"
+>;
+
+type FilterCategory = {
   key: string;
   label: string;
   options: string[];
-  match: (event: T, selectedOptions: string[]) => boolean;
+  match: (event: FilterableEvent, selectedOptions: string[]) => boolean;
 };
 
-export const FILTER_CATEGORIES: FilterCategory<Event>[] = [
+export const FILTER_CATEGORIES: FilterCategory[] = [
   {
     key: "event_type",
     label: "Event Type",

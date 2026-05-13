@@ -80,7 +80,7 @@ export default function EventList({ events }: { events: EventListItem[] }) {
 
   return (
     <>
-      <PageHero src='/images/schedule/oc14edit.JPG' alt='OC Volleyball Action'>
+      <PageHero src='/images/schedule/oc14.JPG' alt='OC Volleyball Action'>
         <div className='max-w-7xl mx-auto px-6 w-full'>
           <h1 className='page-heading'>{getHeaderTitle} Events</h1>
         </div>

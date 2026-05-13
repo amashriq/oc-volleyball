@@ -21,7 +21,9 @@ export default function PageHero({
       : "justify-center px-6";
 
   return (
-    <section className={`relative ${heightClass} w-full overflow-hidden`}>
+    <section
+      className={`relative ${heightClass} shadow-md w-full overflow-hidden`}
+    >
       <Image
         src={src}
         alt={alt}
