@@ -23,7 +23,7 @@ export default async function HomePage() {
   return (
     <main>
       <PageHero
-        src='/images/hero/hero1.JPG'
+        src='/images/hero/CompressedHero1.JPG'
         alt='OC Volleyball Action'
         contentPosition='top'
         heightClass='h-150 md:h-150'

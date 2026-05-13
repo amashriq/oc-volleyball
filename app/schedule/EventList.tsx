@@ -76,11 +76,19 @@ export default function EventList({ events }: { events: EventListItem[] }) {
     });
   };
 
+  const handleResetFilters = () => {
+    setSelectedFilters({});
+    setViewMode("upcoming");
+  };
+
   const getHeaderTitle = viewMode === "upcoming" ? "Upcoming" : "Past";
 
   return (
     <>
-      <PageHero src='/images/schedule/oc14.JPG' alt='OC Volleyball Action'>
+      <PageHero
+        src='/images/schedule/CompressedOc14.JPG'
+        alt='OC Volleyball Action'
+      >
         <div className='max-w-7xl mx-auto px-6 w-full'>
           <h1 className='page-heading'>{getHeaderTitle} Events</h1>
         </div>
@@ -206,8 +214,18 @@ export default function EventList({ events }: { events: EventListItem[] }) {
                 </div>
               ))}
 
+              {/* Reset Filters */}
+              <div className='mt-6'>
+                <button
+                  onClick={handleResetFilters}
+                  className='w-full bg-black text-white text-sm font-black uppercase tracking-widest cursor-pointer py-2 hover:bg-gray-800 transition-colors duration-300'
+                >
+                  Reset Filters
+                </button>
+              </div>
+
               {/* Hide Filters — mobile only */}
-              <div className='md:hidden mt-4 pt-4 border-t border-gray-100 text-center'>
+              <div className='md:hidden mt-4 py-2 border-t border-gray-100 text-center'>
                 <button
                   onClick={() => setFiltersOpen(false)}
                   className='text-sm w-full font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors duration-300'

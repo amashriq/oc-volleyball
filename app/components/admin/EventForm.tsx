@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase-browser";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { revalidateSchedule } from "@/app/admin/actions";
-import { validateEvent } from "@/lib/validateEvent";
+import { validateEvent, MAX_TITLE_LENGTH, MAX_DESCRIPTION_LENGTH, MAX_LOCATION_LENGTH, MAX_ADDRESS_LENGTH } from "@/lib/validateEvent";
 
 const SKILL_LEVEL_OPTIONS = ["aa", "bb", "a", "b", "open"] as const;
 
@@ -83,7 +83,7 @@ export default function EventForm({ mode, initialValues, eventId }: EventFormPro
   }
 
   async function handleSubmit() {
-    const validationError = validateEvent({ title, description, eventDate, startTime, location });
+    const validationError = validateEvent({ title, description, eventDate, startTime, location, address, cost });
     if (validationError) {
       setError(validationError);
       return;
@@ -151,18 +151,35 @@ export default function EventForm({ mode, initialValues, eventId }: EventFormPro
 
   const previewSrc = image ? URL.createObjectURL(image) : currentImageUrl;
 
+  const costError =
+    cost.trim() !== "" && isNaN(Number(cost.trim()))
+      ? "Cost must be a valid number."
+      : cost.trim() !== "" && Number(cost.trim()) < 0
+      ? "Cost must be 0 or greater."
+      : "";
+
   return (
     <main className="min-h-screen bg-slate-50 px-4 md:px-8 py-10 md:py-14">
 
       {/* Page Header */}
-      <div className="max-w-2xl mx-auto mb-8">
-        <div className="w-12 h-1 bg-red-700 mb-3" />
-        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-[#001D3D] leading-tight">
-          {mode === "create" ? "Add New Event" : "Edit Event"}
-        </h1>
-        <p className="mt-2 text-sm text-gray-400 font-medium">
-          All fields marked <span className="text-red-500">*</span> must be filled before saving.
-        </p>
+      <div className="max-w-2xl mx-auto mb-8 flex items-start justify-between gap-4">
+        <div>
+          <div className="w-12 h-1 bg-red-700 mb-3" />
+          <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-[#001D3D] leading-tight">
+            {mode === "create" ? "Add New Event" : "Edit Event"}
+          </h1>
+          <p className="mt-2 text-sm text-gray-400 font-medium">
+            All fields marked <span className="text-red-500">*</span> must be filled before saving.
+          </p>
+        </div>
+        <button
+          type="button"
+          aria-label="Close"
+          onClick={() => router.push("/admin")}
+          className="text-2xl font-bold text-gray-400 hover:text-gray-800 leading-none mt-1 transition-colors duration-150"
+        >
+          ✕
+        </button>
       </div>
 
       {/* Card Stack */}
@@ -184,8 +201,12 @@ export default function EventForm({ mode, initialValues, eventId }: EventFormPro
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
+                maxLength={MAX_TITLE_LENGTH}
                 className={inputClass}
               />
+              <span className={`text-xs text-right font-medium ${title.length >= MAX_TITLE_LENGTH ? "text-red-500" : "text-gray-400"}`}>
+                {title.length} / {MAX_TITLE_LENGTH}
+              </span>
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -198,8 +219,12 @@ export default function EventForm({ mode, initialValues, eventId }: EventFormPro
                 onChange={(e) => setDescription(e.target.value)}
                 required
                 rows={4}
+                maxLength={MAX_DESCRIPTION_LENGTH}
                 className={`${inputClass} resize-y`}
               />
+              <span className={`text-xs text-right font-medium ${description.length >= MAX_DESCRIPTION_LENGTH ? "text-red-500" : "text-gray-400"}`}>
+                {description.length} / {MAX_DESCRIPTION_LENGTH}
+              </span>
             </div>
 
           </div>
@@ -339,8 +364,12 @@ export default function EventForm({ mode, initialValues, eventId }: EventFormPro
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 required
+                maxLength={MAX_LOCATION_LENGTH}
                 className={inputClass}
               />
+              <span className={`text-xs text-right font-medium ${location.length >= MAX_LOCATION_LENGTH ? "text-red-500" : "text-gray-400"}`}>
+                {location.length} / {MAX_LOCATION_LENGTH}
+              </span>
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -352,8 +381,12 @@ export default function EventForm({ mode, initialValues, eventId }: EventFormPro
                 placeholder="123 Main St, City, State"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
+                maxLength={MAX_ADDRESS_LENGTH}
                 className={inputClass}
               />
+              <span className={`text-xs text-right font-medium ${address.length >= MAX_ADDRESS_LENGTH ? "text-red-500" : "text-gray-400"}`}>
+                {address.length} / {MAX_ADDRESS_LENGTH}
+              </span>
             </div>
 
           </div>
@@ -375,6 +408,7 @@ export default function EventForm({ mode, initialValues, eventId }: EventFormPro
                   onChange={(e) => setCost(e.target.value)}
                   className={inputClass}
                 />
+                {costError && <p className="text-xs text-red-600 mt-0.5">{costError}</p>}
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className={labelClass}>Cost Type</label>

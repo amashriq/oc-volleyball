@@ -107,4 +107,39 @@ describe("EventList", () => {
       expect(link).toHaveAttribute("href", "/schedule/1");
     });
   });
+
+  describe("reset filters button", () => {
+    it("renders a Reset Filters button", () => {
+      render(<EventList events={ALL_EVENTS} />);
+      expect(screen.getByRole("button", { name: /reset filters/i })).toBeInTheDocument();
+    });
+
+    it("clears all checkbox filters when clicked", async () => {
+      render(<EventList events={ALL_EVENTS} />);
+      await userEvent.click(screen.getByRole("checkbox", { name: /tournaments/i }));
+      expect(screen.queryByText("Friday Night Open Gym")).not.toBeInTheDocument();
+      await userEvent.click(screen.getByRole("button", { name: /reset filters/i }));
+      expect(screen.getByText("Friday Night Open Gym")).toBeInTheDocument();
+      expect(screen.getByText("Summer Open")).toBeInTheDocument();
+    });
+
+    it("resets the timeframe to upcoming when on past view", async () => {
+      render(<EventList events={ALL_EVENTS} />);
+      await userEvent.click(screen.getByRole("radio", { name: /past events/i }));
+      expect(screen.getByText("Winter Classic")).toBeInTheDocument();
+      await userEvent.click(screen.getByRole("button", { name: /reset filters/i }));
+      expect(screen.queryByText("Winter Classic")).not.toBeInTheDocument();
+      expect(screen.getByText("Summer Open")).toBeInTheDocument();
+    });
+
+    it("restores all events after multiple filters are applied then reset", async () => {
+      render(<EventList events={ALL_EVENTS} />);
+      await userEvent.click(screen.getByRole("checkbox", { name: /tournaments/i }));
+      await userEvent.click(screen.getByRole("checkbox", { name: /indoor/i }));
+      expect(screen.queryByText("Friday Night Open Gym")).not.toBeInTheDocument();
+      await userEvent.click(screen.getByRole("button", { name: /reset filters/i }));
+      expect(screen.getByText("Summer Open")).toBeInTheDocument();
+      expect(screen.getByText("Friday Night Open Gym")).toBeInTheDocument();
+    });
+  });
 });

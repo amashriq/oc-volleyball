@@ -1,7 +1,8 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { supabase } from "@/lib/supabase-browser";
 
 const TABS = [
   { label: "Schedule", href: "/admin" },
@@ -12,8 +13,14 @@ const DASHBOARD_PATHS = new Set(["/admin", "/admin/merch"]);
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
 
   if (!DASHBOARD_PATHS.has(pathname)) return <>{children}</>;
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    router.push("/admin/login");
+  }
 
   return (
     <>
@@ -25,7 +32,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               Admin
             </h1>
           </div>
-          <nav className="flex mt-4 gap-0">
+          <nav className="flex items-center mt-4 gap-0">
             {TABS.map((tab) => (
               <Link
                 key={tab.href}
@@ -39,6 +46,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 {tab.label}
               </Link>
             ))}
+            <button
+              onClick={handleSignOut}
+              className="ml-auto px-5 py-3 text-xs font-black uppercase tracking-widest border-b-2 border-transparent text-gray-400 hover:text-red-700 transition-colors duration-150 cursor-pointer"
+            >
+              Sign Out
+            </button>
           </nav>
         </div>
       </div>
