@@ -86,7 +86,7 @@ export default function EventList({ events }: { events: EventListItem[] }) {
   return (
     <>
       <PageHero
-        src='/images/schedule/CompressedOc14.JPG'
+        src='/images/schedule/CompressedOc14.jpg'
         alt='OC Volleyball Action'
       >
         <div className='max-w-7xl mx-auto px-6 w-full'>

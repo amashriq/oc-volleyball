@@ -7,7 +7,7 @@ export default function Error({ reset }: { reset: () => void }) {
   return (
     <main>
       <PageHero
-        src='/images/schedule/CompressedOc14.JPG'
+        src='/images/schedule/CompressedOc14.jpg'
         alt='OC Volleyball'
         heightClass='h-screen'
       >
