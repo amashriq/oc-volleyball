@@ -68,7 +68,7 @@ export default function UpcomingEventCard({ event }: Props) {
 
         {/* Title */}
         <Link href={`/schedule/${event.id}`}>
-          <h3 className='text-xl font-black uppercase tracking-tighter text-black leading-tight mb-3 hover:text-red-700 transition-colors'>
+          <h3 className='text-xl font-black uppercase tracking-tighter text-black leading-tight mb-3 hover:text-red-700 transition-colors duration-300'>
             {event.title}
           </h3>
         </Link>

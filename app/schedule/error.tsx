@@ -26,13 +26,13 @@ export default function Error({ reset }: { reset: () => void }) {
           <div className='flex flex-col sm:flex-row gap-3 justify-center'>
             <button
               onClick={reset}
-              className='bg-white text-black text-xs font-black uppercase tracking-widest px-8 py-4 hover:bg-gray-100 transition-colors'
+              className='bg-white text-black text-xs font-black uppercase tracking-widest px-8 py-4 hover:bg-gray-100 transition-colors duration-300'
             >
               Try Again
             </button>
             <Link
               href='/'
-              className='bg-red-700 text-white text-xs font-black uppercase tracking-widest px-8 py-4 hover:bg-red-800 transition-colors'
+              className='bg-red-700 text-white text-xs font-black uppercase tracking-widest px-8 py-4 hover:bg-red-800 transition-colors duration-300'
             >
               Home
             </Link>

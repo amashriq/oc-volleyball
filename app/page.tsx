@@ -45,7 +45,7 @@ export default async function HomePage() {
             </h2>
             <Link
               href='/schedule'
-              className='text-xs font-black uppercase tracking-widest text-red-700 hover:text-red-800 transition-colors'
+              className='text-xs font-black uppercase tracking-widest text-red-700 hover:text-red-800 transition-colors duration-300'
             >
               View All →
             </Link>

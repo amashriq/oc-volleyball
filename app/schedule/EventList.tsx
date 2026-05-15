@@ -260,7 +260,7 @@ export default function EventList({ events }: { events: EventListItem[] }) {
               processedEvents.map((event) => (
                 <div
                   key={event.id}
-                  className='flex flex-col md:flex-row md:items-center px-8 py-8 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors group'
+                  className='flex flex-col md:flex-row md:items-center px-8 py-8 border-b border-gray-100 last:border-0 hover:bg-gray-50 duration-300 transition-colors group'
                 >
                   {/* Column 1: Date */}
                   <div className='w-full md:w-1/4 mb-2 md:mb-0'>
@@ -281,7 +281,7 @@ export default function EventList({ events }: { events: EventListItem[] }) {
                   {/* Column 2: Name & Location */}
                   <div className='w-full md:w-1/2 mb-4 md:mb-0'>
                     <Link href={`/schedule/${event.id}`}>
-                      <h4 className='text-xl font-black uppercase leading-tight mb-1 text-black group-hover:text-red-700 transition-colors'>
+                      <h4 className='text-xl font-black uppercase leading-tight mb-1 text-black group-hover:text-red-700 transition-colors duration-300'>
                         {event.title}
                       </h4>
                     </Link>
@@ -297,7 +297,7 @@ export default function EventList({ events }: { events: EventListItem[] }) {
                         href={event.registration_link}
                         target='_blank'
                         rel='noopener noreferrer'
-                        className='text-xs font-black uppercase tracking-widest text-red-700 border-b-2 border-red-700/20 hover:border-red-700 pb-1 transition-all'
+                        className='text-xs font-black uppercase tracking-widest text-red-700 border-b-2 border-red-700/20 hover:border-red-700 pb-1 transition-all duration-300'
                       >
                         Registration
                       </Link>
