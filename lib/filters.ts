@@ -66,7 +66,7 @@ export const FILTER_CATEGORIES: FilterCategory[] = [
   {
     key: "skill_level",
     label: "Skill Level",
-    options: ["Open", "AA", "A", "BB", "B"],
+    options: ["AA", "BB"],
     match: (event, selected) => {
       if (selected.length === 0) return true;
       if (!event.skill_levels || event.skill_levels.length === 0) return false;

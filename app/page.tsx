@@ -26,7 +26,7 @@ export default async function HomePage() {
         src='/images/hero/CompressedHero1.jpg'
         alt='OC Volleyball Action'
         contentPosition='top'
-        heightClass='h-150 md:h-150'
+        heightClass='h-130 md:h-150'
       >
         <h1 className='page-heading'>
           OUTTA
