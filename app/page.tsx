@@ -1,7 +1,21 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import PageHero from "./components/PageHero";
 import UpcomingEventCard from "./components/UpcomingEventCard";
 import { createClient } from "@/lib/supabase-server";
+import { DEFAULT_OG_IMAGE } from "@/lib/constants";
+
+export const metadata: Metadata = {
+  description:
+    "Find and register for upcoming volleyball tournaments and open gym sessions with Outta Control Volleyball.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Outta Control Volleyball",
+    description:
+      "Find and register for upcoming volleyball tournaments and open gym sessions.",
+    images: [DEFAULT_OG_IMAGE],
+  },
+};
 
 export default async function HomePage() {
   const supabase = await createClient();

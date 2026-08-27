@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Oswald, Lato } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Navbar from "./components/Navbar";
+import { SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/constants";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,18 +33,12 @@ export const metadata: Metadata = {
   },
   description:
     "Find and register for volleyball tournaments and open gym sessions with Outta Control Volleyball.",
-  metadataBase: new URL("https://oc-volleyball.com"),
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: "/" },
   openGraph: {
     siteName: "Outta Control Volleyball",
     type: "website",
-    images: [
-      {
-        url: "/images/logo/oc_logo.png",
-        width: 800,
-        height: 600,
-        alt: "Outta Control Volleyball",
-      },
-    ],
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 
