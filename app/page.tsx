@@ -11,8 +11,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
   openGraph: {
     title: "Outta Control Volleyball",
-    description:
-      "Find and register for upcoming volleyball tournaments and open gym sessions.",
+    description: "Come check out the best volleyball in the DMV!",
     images: [DEFAULT_OG_IMAGE],
   },
 };
