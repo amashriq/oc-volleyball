@@ -12,7 +12,7 @@ describe("SITE_URL", () => {
 
 describe("DEFAULT_OG_IMAGE", () => {
   it("points at the site's default Open Graph image", () => {
-    expect(DEFAULT_OG_IMAGE.url).toBe("/images/logo/opengraph-image.jpg");
+    expect(DEFAULT_OG_IMAGE.url).toBe("/images/logo/opengraph-image.png");
   });
 
   it("uses the standard 1200x630 Open Graph aspect ratio", () => {
