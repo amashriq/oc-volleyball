@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase-server";
 import PageHero from "@/app/components/PageHero";
 import { formatTime, formatDate } from "@/lib/format";
+import { DEFAULT_OG_IMAGE } from "@/lib/constants";
 
 export async function generateMetadata({
   params,
@@ -14,7 +15,7 @@ export async function generateMetadata({
   const supabase = await createClient();
   const { data: event } = await supabase
     .from("events")
-    .select("title, description")
+    .select("title, description, image_url")
     .eq("id", id)
     .single();
 
@@ -23,9 +24,11 @@ export async function generateMetadata({
   return {
     title: event.title,
     description: event.description ?? undefined,
+    alternates: { canonical: `/schedule/${id}` },
     openGraph: {
       title: `${event.title} | Outta Control Volleyball`,
       description: event.description ?? undefined,
+      images: event.image_url ? [event.image_url] : [DEFAULT_OG_IMAGE],
     },
   };
 }

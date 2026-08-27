@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase-server";
+import { DEFAULT_OG_IMAGE } from "@/lib/constants";
 import EventList from "./EventList";
 
 export const metadata: Metadata = {
   title: "Schedule",
   description:
     "Browse upcoming volleyball tournaments and open gym sessions. Filter by type, gender, surface, team size, and skill level.",
+  alternates: { canonical: "/schedule" },
   openGraph: {
     title: "Schedule | Outta Control Volleyball",
     description:
       "Browse upcoming volleyball tournaments and open gym sessions.",
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 
