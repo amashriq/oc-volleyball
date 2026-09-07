@@ -7,7 +7,7 @@ import { DEFAULT_OG_IMAGE } from "@/lib/constants";
 
 export const metadata: Metadata = {
   description:
-    "Find and register for upcoming volleyball tournaments and open gym sessions with Outta Control Volleyball.",
+    "Find competitive tournaments and open gyms with Outta Control Volleyball.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "Outta Control Volleyball",
