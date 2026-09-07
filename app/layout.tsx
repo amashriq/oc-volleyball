@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     template: "%s | Outta Control Volleyball",
   },
   description:
-    "Find and register for volleyball tournaments and open gym sessions with Outta Control Volleyball.",
+    "Find competitive tournaments and open gyms with Outta Control Volleyball.",
   metadataBase: new URL(SITE_URL),
   alternates: { canonical: "/" },
   openGraph: {
