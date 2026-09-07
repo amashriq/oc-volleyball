@@ -29,29 +29,29 @@ npm run test:e2e    # Playwright E2E tests (requires dev server)
 
 **Data model — `events` table:**
 
-| column              | type         | notes                                                              |
-| ------------------- | ------------ | ------------------------------------------------------------------ |
-| `id`                | bigint       | PK, auto-generated                                                 |
-| `title`             | text         |                                                                    |
-| `description`       | text         |                                                                    |
-| `event_type`        | text         | `"tournament"` or `"open_gym"`; CHECK constraint enforced          |
-| `gender`            | text         | `"mens"`, `"womens"`, or `"coed"`; CHECK constraint enforced       |
-| `surface`           | text         | `"indoor"`, `"grass"`, or `"beach"`; CHECK constraint enforced     |
-| `team_size`         | text         | `"6v6"`, `"4v4"`, `"3v3"`, or `"2v2"`; CHECK constraint enforced  |
-| `skill_levels`      | text[] \| null | subset of `["aa","bb","a","b","open"]`; CHECK constraint enforced |
-| `event_date`        | date         | Postgres `date` type; JS receives as `YYYY-MM-DD` string           |
-| `start_time`        | time         | Postgres `time` type; JS receives as `HH:MM:SS` string            |
-| `end_time`          | time \| null | must be after `start_time` when set; CHECK constraint enforced     |
-| `address`           | text \| null |                                                                    |
-| `cost`              | numeric      | `>= 0` enforced; use `cost === 0` to display as free               |
-| `cost_type`         | text         | `"team"` or `"individual"`; CHECK constraint enforced              |
-| `capacity`          | int \| null  | `null` = unlimited; `> 0` enforced when set                        |
-| `registration_link` | text \| null | must start with `http://` or `https://`; CHECK constraint enforced |
-| `image_url`         | text \| null | Public URL from Supabase Storage bucket `event_images`             |
-| `is_active`         | boolean      | default `true`; RLS exposes only active events to public           |
-| `created_at`        | timestamptz  | set by DB default                                                  |
-| `updated_at`        | timestamptz  | auto-updated by trigger on every UPDATE                            |
-| `created_by`        | uuid         | `auth.uid()` default; references `auth.users(id)`                  |
+| column              | type           | notes                                                              |
+| ------------------- | -------------- | ------------------------------------------------------------------ |
+| `id`                | bigint         | PK, auto-generated                                                 |
+| `title`             | text           |                                                                    |
+| `description`       | text           |                                                                    |
+| `event_type`        | text           | `"tournament"` or `"open_gym"`; CHECK constraint enforced          |
+| `gender`            | text           | `"mens"`, `"womens"`, or `"coed"`; CHECK constraint enforced       |
+| `surface`           | text           | `"indoor"`, `"grass"`, or `"beach"`; CHECK constraint enforced     |
+| `team_size`         | text           | `"6v6"`, `"4v4"`, `"3v3"`, or `"2v2"`; CHECK constraint enforced   |
+| `skill_levels`      | text[] \| null | subset of `["aa","bb","a","b","open"]`; CHECK constraint enforced  |
+| `event_date`        | date           | Postgres `date` type; JS receives as `YYYY-MM-DD` string           |
+| `start_time`        | time           | Postgres `time` type; JS receives as `HH:MM:SS` string             |
+| `end_time`          | time \| null   | must be after `start_time` when set; CHECK constraint enforced     |
+| `address`           | text \| null   |                                                                    |
+| `cost`              | numeric        | `>= 0` enforced; use `cost === 0` to display as free               |
+| `cost_type`         | text           | `"team"` or `"individual"`; CHECK constraint enforced              |
+| `capacity`          | int \| null    | `null` = unlimited; `> 0` enforced when set                        |
+| `registration_link` | text \| null   | must start with `http://` or `https://`; CHECK constraint enforced |
+| `image_url`         | text \| null   | Public URL from Supabase Storage bucket `event_images`             |
+| `is_active`         | boolean        | default `true`; RLS exposes only active events to public           |
+| `created_at`        | timestamptz    | set by DB default                                                  |
+| `updated_at`        | timestamptz    | auto-updated by trigger on every UPDATE                            |
+| `created_by`        | uuid           | `auth.uid()` default; references `auth.users(id)`                  |
 
 **Public pages** (`/`, `/schedule`) are fully styled with Tailwind
 
@@ -99,13 +99,14 @@ Every new public page must include all four of the following:
 
 ## Testing
 
-Follow this workflow for **every** change to a `.ts` or `.tsx` source file — no exceptions for "small" changes. Tests are not required for non-code edits (config files, CSS, JSON, markdown).
+Follow this workflow for **every** change to a `.ts` or `.tsx` source file — no new tests for small changes, just run already existing tests. Tests are not required for non-code edits (config files, CSS, JSON, markdown).
 
 ### Step 1 — Write tests first
 
 Before writing any implementation code, write the full test suite in `__tests__/<filename>.test.ts(x)` adjacent to the source file. Use existing tests in `app/schedule/__tests__/` and `lib/__tests__/` as style references.
 
 Tests must be strict and adversarial — written as if you are trying to break your own implementation:
+
 - **Happy paths** — correct inputs, expected outputs
 - **Edge cases** — empty arrays, zero values, single-element inputs, very large inputs
 - **Invalid inputs** — wrong types, null, undefined, out-of-range values
@@ -121,6 +122,7 @@ Write the implementation after the tests exist. The PostToolUse hook runs `npm t
 ### Step 3 — Fix loop (code only, max 5 iterations)
 
 If tests fail:
+
 1. Read the failure output carefully
 2. Fix only the implementation — never change a test to make it pass, unless the test itself is provably wrong (e.g., wrong expected value due to a spec misread)
 3. Run `npm test` again
@@ -131,6 +133,7 @@ If tests are still failing after 5 iterations: stop and explain exactly what you
 ### Step 4 — Report
 
 When all tests pass, report:
+
 - How many fix-loop iterations it took
 - The root cause of each failure
 - Any edge cases discovered during the process that were not in the original spec
